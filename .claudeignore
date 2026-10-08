@@ -1,0 +1,17 @@
+# Entorno virtual (librerías instaladas)
+.venv/
+
+# Archivos temporales de Python y pruebas
+.pytest_cache/
+**/__pycache__/
+**/.pytest_cache/
+*.pyc
+
+# Datos sensibles y archivos de configuración
+.env
+.env.*
+*.log
+
+# Archivos invisibles del sistema y de Git
+.DS_Store
+.git/
