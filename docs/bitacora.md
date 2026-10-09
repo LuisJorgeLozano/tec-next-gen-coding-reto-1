@@ -3,6 +3,7 @@
 **Nombre: Luis Jorge Lozano Domínguez**  
 **Matrícula:**  
 **Fecha: 08 de octubre de 2026**  
+**Git: https://github.com/LuisJorgeLozano/tec-next-gen-coding-reto-1**
 
 ---
 
