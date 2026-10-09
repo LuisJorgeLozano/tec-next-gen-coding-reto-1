@@ -3,22 +3,25 @@
 
 import gestor
 
+# Products with stock below this value are flagged as low stock
+STOCK_MINIMO = 5
+
 
 def hacer_cosa(v):
     # le da formato de dinero al numero
     return "$" + str(round(v, 2))
 
 
-def productos_stock_bajo():
+def productos_stock_bajo() -> list:
     """Regresa la lista de productos con stock por debajo del minimo."""
     temp2 = []
     for k in gestor.INVENTARIO:
-        if gestor.INVENTARIO[k]["stock"] < 5:
+        if gestor.INVENTARIO[k]["stock"] < STOCK_MINIMO:
             temp2.append(gestor.INVENTARIO[k])
     return temp2
 
 
-def reporte_inventario():
+def reporte_inventario() -> str:
     """Arma el reporte del inventario, lo imprime y lo regresa como texto."""
     s = "===== INVENTARIO =====\n"
     aux = 0
@@ -26,7 +29,7 @@ def reporte_inventario():
         p = gestor.INVENTARIO[k]
         linea = p["codigo"] + " | " + p["nombre"] + " | "
         linea = linea + hacer_cosa(p["precio"]) + " | stock: " + str(p["stock"])
-        if p["stock"] < 5:
+        if p["stock"] < STOCK_MINIMO:
             linea = linea + "  <-- STOCK BAJO"
         s = s + linea + "\n"
         aux = aux + p["precio"] * p["stock"]
@@ -35,7 +38,7 @@ def reporte_inventario():
     return s
 
 
-def total_vendido():
+def total_vendido() -> float:
     """Suma el total (con IVA) de todas las ventas registradas."""
     t = 0
     for v in gestor.VENTAS:
@@ -43,36 +46,23 @@ def total_vendido():
     return round(t, 2)
 
 
-def mas_vendidos(n=3):
+def mas_vendidos(n: int = 3) -> list[tuple[str, int]]:
     """Regresa los n productos mas vendidos como lista de (codigo, unidades)."""
-    aux = {}
+    unidades = {}
     for v in gestor.VENTAS:
-        if v["codigo"] in aux:
-            aux[v["codigo"]] = aux[v["codigo"]] + v["cantidad"]
-        else:
-            aux[v["codigo"]] = v["cantidad"]
-    temp = []
-    for k in aux:
-        temp.append((k, aux[k]))
-    # ordenamiento de burbuja (TODO: algun dia usar sorted)
-    for i in range(len(temp)):
-        for j in range(0, len(temp) - i - 1):
-            if temp[j][1] < temp[j + 1][1]:
-                t = temp[j]
-                temp[j] = temp[j + 1]
-                temp[j + 1] = t
-    return temp[0:n]
+        unidades[v["codigo"]] = unidades.get(v["codigo"], 0) + v["cantidad"]
+    # sorted is stable, so ties keep their first-sale order
+    ordenados = sorted(unidades.items(), key=lambda par: par[1], reverse=True)
+    return ordenados[:n]
 
 
-def resumen_ventas():
+def resumen_ventas() -> str:
     """Arma el resumen de ventas del dia, lo imprime y lo regresa."""
     s = "===== RESUMEN DE VENTAS =====\n"
-    t = 0
     for v in gestor.VENTAS:
         s = s + "Folio " + str(v["folio"]) + ": " + v["nombre"]
         s = s + " x" + str(v["cantidad"]) + " = " + hacer_cosa(v["total"]) + "\n"
-        t = t + v["total"]
     s = s + "Numero de ventas: " + str(len(gestor.VENTAS)) + "\n"
-    s = s + "Total del dia: " + hacer_cosa(t) + "\n"
+    s = s + "Total del dia: " + hacer_cosa(total_vendido()) + "\n"
     print(s)
     return s
