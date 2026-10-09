@@ -9,11 +9,11 @@ import gestor
 
 
 def _alta_producto_basico(codigo="A1", precio=100.0, stock=50):
-    assert gestor.agregarProducto(codigo, "Producto de prueba", precio, stock)
+    assert gestor.agregar_producto(codigo, "Producto de prueba", precio, stock)
 
 
 def test_agregar_producto_queda_en_inventario():
-    assert gestor.agregarProducto("A1", "Café", 185.0, 10) is True
+    assert gestor.agregar_producto("A1", "Café", 185.0, 10) is True
     assert "A1" in gestor.INVENTARIO
     assert gestor.INVENTARIO["A1"]["nombre"] == "Café"
     assert gestor.INVENTARIO["A1"]["stock"] == 10
@@ -22,11 +22,11 @@ def test_agregar_producto_queda_en_inventario():
 def test_rechaza_altas_invalidas():
     _alta_producto_basico("A1")
     # codigo duplicado
-    assert gestor.agregarProducto("A1", "Otro", 10.0, 1) is False
+    assert gestor.agregar_producto("A1", "Otro", 10.0, 1) is False
     # precio y stock invalidos
-    assert gestor.agregarProducto("A2", "Café", 0, 10) is False
-    assert gestor.agregarProducto("A3", "Café", -5.0, 10) is False
-    assert gestor.agregarProducto("A4", "Café", 10.0, -1) is False
+    assert gestor.agregar_producto("A2", "Café", 0, 10) is False
+    assert gestor.agregar_producto("A3", "Café", -5.0, 10) is False
+    assert gestor.agregar_producto("A4", "Café", 10.0, -1) is False
 
 
 def test_actualizar_stock_suma_y_resta():
@@ -46,9 +46,9 @@ def test_eliminar_producto():
 
 
 def test_buscar_producto_por_nombre():
-    gestor.agregarProducto("A1", "Café de grano", 185.0, 10)
-    gestor.agregarProducto("A2", "Azúcar", 32.5, 40)
-    resultados = gestor.buscarProducto("café")
+    gestor.agregar_producto("A1", "Café de grano", 185.0, 10)
+    gestor.agregar_producto("A2", "Azúcar", 32.5, 40)
+    resultados = gestor.buscar_producto("café")
     assert len(resultados) == 1
     assert resultados[0]["codigo"] == "A1"
 

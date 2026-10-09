@@ -12,7 +12,7 @@ from datetime import datetime
 # ---------------------------------------------------------------
 INVENTARIO = {}
 VENTAS = []
-contadorVentas = 0
+contador_ventas = 0
 ultimo_error = ""
 
 # ---------------------------------------------------------------
@@ -50,16 +50,16 @@ def calcular_precios(precio: float, cantidad: int, cliente: str = "") -> dict:
     }
 
 
-def reiniciar_sistema():
+def reiniciar_sistema() -> None:
     """Borra todo el estado del sistema (inventario, ventas y folios)."""
-    global contadorVentas, ultimo_error
+    global contador_ventas, ultimo_error
     INVENTARIO.clear()
     VENTAS.clear()
-    contadorVentas = 0
+    contador_ventas = 0
     ultimo_error = ""
 
 
-def agregarProducto(codigo, nombre, precio, stock):
+def agregar_producto(codigo: str, nombre: str, precio: float, stock: int) -> bool:
     # valida los datos y da de alta un producto en el inventario
     global ultimo_error
     if codigo is None or codigo == "":
@@ -74,16 +74,16 @@ def agregarProducto(codigo, nombre, precio, stock):
     if stock < 0:
         ultimo_error = "stock invalido"
         return False
-    x = {}
-    x["codigo"] = codigo
-    x["nombre"] = nombre
-    x["precio"] = precio
-    x["stock"] = stock
-    INVENTARIO[codigo] = x
+    producto = {}
+    producto["codigo"] = codigo
+    producto["nombre"] = nombre
+    producto["precio"] = precio
+    producto["stock"] = stock
+    INVENTARIO[codigo] = producto
     return True
 
 
-def eliminar_producto(codigo):
+def eliminar_producto(codigo: str) -> bool:
     """Quita un producto del inventario. Regresa False si no existe."""
     global ultimo_error
     if codigo in INVENTARIO:
@@ -93,27 +93,27 @@ def eliminar_producto(codigo):
     return False
 
 
-def actualizar_stock(codigo, cantidad):
+def actualizar_stock(codigo: str, cantidad: int) -> bool:
     """Suma unidades al stock (o resta si la cantidad es negativa)."""
     global ultimo_error
     if codigo not in INVENTARIO:
         ultimo_error = "producto no existe"
         return False
-    aux = INVENTARIO[codigo]["stock"] + cantidad
-    if aux < 0:
+    nuevo_stock = INVENTARIO[codigo]["stock"] + cantidad
+    if nuevo_stock < 0:
         ultimo_error = "el stock no puede quedar negativo"
         return False
-    INVENTARIO[codigo]["stock"] = aux
+    INVENTARIO[codigo]["stock"] = nuevo_stock
     return True
 
 
-def buscarProducto(texto):
-    # busca productos cuyo nombre contenga el texto (sin importar mayusculas)
-    temp2 = []
-    for k in INVENTARIO:
-        if texto.lower() in INVENTARIO[k]["nombre"].lower():
-            temp2.append(INVENTARIO[k])
-    return temp2
+def buscar_producto(texto: str) -> list:
+    # case-insensitive search of products whose name contains the text
+    resultados = []
+    for codigo in INVENTARIO:
+        if texto.lower() in INVENTARIO[codigo]["nombre"].lower():
+            resultados.append(INVENTARIO[codigo])
+    return resultados
 
 
 def _validar_venta(codigo: str, cantidad: int) -> bool:
@@ -149,20 +149,20 @@ def _armar_ticket(venta: dict) -> str:
     return ticket
 
 
-def registrar_venta(codigo, cantidad, cliente=""):
+def registrar_venta(codigo: str, cantidad: int, cliente: str = "") -> dict | None:
     """Registra una venta: valida, cobra, descuenta stock y genera el ticket.
 
     Si algo falla regresa None y deja el motivo en ultimo_error.
     """
-    global contadorVentas
+    global contador_ventas
     if not _validar_venta(codigo, cantidad):
         return None
     producto = INVENTARIO[codigo]
     precios = calcular_precios(producto["precio"], cantidad, cliente)
     producto["stock"] = producto["stock"] - cantidad
-    contadorVentas = contadorVentas + 1
+    contador_ventas = contador_ventas + 1
     venta = {
-        "folio": contadorVentas,
+        "folio": contador_ventas,
         "codigo": codigo,
         "nombre": producto["nombre"],
         "cantidad": cantidad,
@@ -178,7 +178,7 @@ def registrar_venta(codigo, cantidad, cliente=""):
     return venta
 
 
-def cotizar(codigo, cantidad):
+def cotizar(codigo: str, cantidad: int) -> float | None:
     """Calcula cuanto costaria una compra sin registrar la venta."""
     global ultimo_error
     if codigo not in INVENTARIO:

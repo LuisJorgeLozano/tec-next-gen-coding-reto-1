@@ -7,7 +7,7 @@ import almacen
 
 def test_guardar_y_cargar_conserva_los_datos(tmp_path):
     ruta = str(tmp_path / "datos.json")
-    gestor.agregarProducto("A1", "Café", 100.0, 50)
+    gestor.agregar_producto("A1", "Café", 100.0, 50)
     gestor.registrar_venta("A1", 2)
     assert almacen.guardar_datos(ruta) is True
 
@@ -22,7 +22,7 @@ def test_guardar_y_cargar_conserva_los_datos(tmp_path):
 
 def test_el_folio_continua_despues_de_recargar(tmp_path):
     ruta = str(tmp_path / "datos.json")
-    gestor.agregarProducto("A1", "Café", 10.0, 50)
+    gestor.agregar_producto("A1", "Café", 10.0, 50)
     gestor.registrar_venta("A1", 1)
     almacen.guardar_datos(ruta)
 

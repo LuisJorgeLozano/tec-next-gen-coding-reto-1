@@ -7,19 +7,19 @@ import os
 import gestor
 
 
-def guardar_datos(ruta):
+def guardar_datos(ruta: str) -> bool:
     """Guarda el inventario, las ventas y el folio actual en un JSON."""
-    d = {}
-    d["inventario"] = gestor.INVENTARIO
-    d["ventas"] = gestor.VENTAS
-    d["contador"] = gestor.contadorVentas
-    f = open(ruta, "w", encoding="utf-8")
-    json.dump(d, f, indent=2, ensure_ascii=False)
-    f.close()
+    datos = {}
+    datos["inventario"] = gestor.INVENTARIO
+    datos["ventas"] = gestor.VENTAS
+    datos["contador"] = gestor.contador_ventas
+    archivo = open(ruta, "w", encoding="utf-8")
+    json.dump(datos, archivo, indent=2, ensure_ascii=False)
+    archivo.close()
     return True
 
 
-def cargar_datos(ruta):
+def cargar_datos(ruta: str) -> bool:
     """Lee el archivo JSON y deja los datos en el estado global.
 
     Regresa False si el archivo no existe o esta corrupto.
@@ -27,24 +27,24 @@ def cargar_datos(ruta):
     if not os.path.exists(ruta):
         gestor.ultimo_error = "el archivo no existe"
         return False
-    f = open(ruta, "r", encoding="utf-8")
+    archivo = open(ruta, "r", encoding="utf-8")
     try:
-        d = json.load(f)
+        datos = json.load(archivo)
     except Exception:
-        f.close()
+        archivo.close()
         gestor.ultimo_error = "archivo corrupto"
         return False
-    f.close()
+    archivo.close()
     gestor.INVENTARIO.clear()
-    for k in d["inventario"]:
-        gestor.INVENTARIO[k] = d["inventario"][k]
+    for codigo in datos["inventario"]:
+        gestor.INVENTARIO[codigo] = datos["inventario"][codigo]
     gestor.VENTAS.clear()
-    for v in d["ventas"]:
-        gestor.VENTAS.append(v)
-    gestor.contadorVentas = d.get("contador", 0)
+    for venta in datos["ventas"]:
+        gestor.VENTAS.append(venta)
+    gestor.contador_ventas = datos.get("contador", 0)
     return True
 
 
-def hayArchivo(ruta: str) -> bool:
+def existe_archivo(ruta: str) -> bool:
     # checks whether the data file already exists
     return os.path.exists(ruta)
