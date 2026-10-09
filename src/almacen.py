@@ -45,9 +45,6 @@ def cargar_datos(ruta):
     return True
 
 
-def hayArchivo(ruta):
-    # checa si ya existe el archivo de datos
-    if os.path.exists(ruta):
-        return True
-    else:
-        return False
+def hayArchivo(ruta: str) -> bool:
+    # checks whether the data file already exists
+    return os.path.exists(ruta)
